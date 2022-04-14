@@ -49,7 +49,7 @@ BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
 brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE" >&2
 brakeman_exit_code=$?
 
-echo "brakeman exited with: $brakeman_exit_code"
+printf "brakeman exited with: %s" $brakeman_exit_code
 
 reviewdog < "$BRAKEMAN_REPORT_FILE" \
   -f=brakeman \
@@ -61,7 +61,7 @@ reviewdog < "$BRAKEMAN_REPORT_FILE" \
   "${INPUT_REVIEWDOG_FLAGS}" >&2
 
 exit_code=$?
-echo "reviewdog exited with: $exit_code"
+printf "reviewdog exited with: %s" $exit_code
 echo '::endgroup::'
 
 exit $exit_code
