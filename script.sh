@@ -1,10 +1,9 @@
 #!/bin/sh -ex
 
-if [ -n "${GITHUB_WORKSPACE}" ]
-then
-    git config --global --add safe.directory "${GITHUB_WORKSPACE}" || exit 1
-    git config --global --add safe.directory "${GITHUB_WORKSPACE}/${INPUT_WORKDIR}" || exit 1
-    cd "${GITHUB_WORKSPACE}/${INPUT_WORKDIR}" || exit 1
+if [ -n "${GITHUB_WORKSPACE}" ]; then
+  git config --global --add safe.directory "${GITHUB_WORKSPACE}" || exit 1
+  git config --global --add safe.directory "${GITHUB_WORKSPACE}/${INPUT_WORKDIR}" || exit 1
+  cd "${GITHUB_WORKSPACE}/${INPUT_WORKDIR}" || exit 1
 fi
 
 export REVIEWDOG_GITHUB_API_TOKEN="${INPUT_GITHUB_TOKEN}"
@@ -28,37 +27,39 @@ if [ "$INPUT_BRAKEMAN_VERSION" = "gemfile" ]; then
     # left it empty otherwise, so no version will be passed
     if [ -n "$BRAKEMAN_GEMFILE_VERSION" ]; then
       BRAKEMAN_VERSION=$BRAKEMAN_GEMFILE_VERSION
-      else
-        printf "Cannot get the brakeman's version from Gemfile.lock. The latest version will be installed."
-    fi
     else
-      printf 'Gemfile.lock not found. The latest version will be installed.'
-  fi
+      printf "Cannot get the brakeman's version from Gemfile.lock. The latest version will be installed."
+    fi
   else
-    # set desired brakeman version
-    BRAKEMAN_VERSION=$INPUT_BRAKEMAN_VERSION
+    printf 'Gemfile.lock not found. The latest version will be installed.'
+  fi
+else
+  # set desired brakeman version
+  BRAKEMAN_VERSION=$INPUT_BRAKEMAN_VERSION
 fi
 
 gem install -N brakeman --version "${BRAKEMAN_VERSION}"
 echo '::endgroup::'
 
 echo '::group:: Running brakeman with reviewdog 🐶 ...'
+printf 'DEEEEEP'
+
 BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
 
 # shellcheck disable=SC2086
-brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE" >&2
+brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
 brakeman_exit_code=$?
 
 printf "brakeman exited with: %s" $brakeman_exit_code
 
-reviewdog < "$BRAKEMAN_REPORT_FILE" \
+reviewdog <"$BRAKEMAN_REPORT_FILE" \
   -f=brakeman \
   -name="${INPUT_TOOL_NAME}" \
   -reporter="${INPUT_REPORTER}" \
   -filter-mode="${INPUT_FILTER_MODE}" \
   -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
   -level="${INPUT_LEVEL}" \
-  "${INPUT_REVIEWDOG_FLAGS}" >&2
+  "${INPUT_REVIEWDOG_FLAGS}"
 
 exit_code=$?
 printf "reviewdog exited with: %s" $exit_code
