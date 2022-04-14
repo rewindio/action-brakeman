@@ -42,13 +42,14 @@ gem install -N brakeman --version "${BRAKEMAN_VERSION}"
 echo '::endgroup::'
 
 echo '::group:: Running brakeman with reviewdog 🐶 ...'
-printf 'DEEEEEP'
+printf 'DEEEEEP1'
 
 BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
 
 # shellcheck disable=SC2086
-brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
+brakeman --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
 brakeman_exit_code=$?
+printf 'DEEEEEP2'
 
 printf "brakeman exited with: %s" $brakeman_exit_code
 
