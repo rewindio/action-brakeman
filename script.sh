@@ -46,6 +46,8 @@ printf 'DEEEEEP1'
 
 BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
 
+git config --global --add safe.directory "${TEMP_PATH}" || exit 1
+
 # shellcheck disable=SC2086
 brakeman --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
 brakeman_exit_code=$?
