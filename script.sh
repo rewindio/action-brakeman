@@ -46,7 +46,11 @@ echo '::group:: Running brakeman with reviewdog 🐶 ...'
 BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
 
 # shellcheck disable=SC2086
-brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
+brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE" >&2
+brakeman_exit_code=$?
+
+echo "brakeman exited with: $brakeman_exit_code"
+
 reviewdog < "$BRAKEMAN_REPORT_FILE" \
   -f=brakeman \
   -name="${INPUT_TOOL_NAME}" \
@@ -54,9 +58,10 @@ reviewdog < "$BRAKEMAN_REPORT_FILE" \
   -filter-mode="${INPUT_FILTER_MODE}" \
   -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
   -level="${INPUT_LEVEL}" \
-  "${INPUT_REVIEWDOG_FLAGS}"
+  "${INPUT_REVIEWDOG_FLAGS}" >&2
 
 exit_code=$?
+echo "reviewdog exited with: $exit_code"
 echo '::endgroup::'
 
 exit $exit_code
