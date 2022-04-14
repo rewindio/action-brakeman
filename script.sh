@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 if [ -n "${GITHUB_WORKSPACE}" ]
 then
