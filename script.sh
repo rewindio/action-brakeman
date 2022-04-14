@@ -53,7 +53,7 @@ brakeman --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
 brakeman_exit_code=$?
 printf 'DEEEEEP2'
 
-printf "brakeman exited with: %s" $brakeman_exit_code
+printf "brakeman exited with: %s" "${brakeman_exit_code}"
 
 reviewdog <"$BRAKEMAN_REPORT_FILE" \
   -f=brakeman \
@@ -65,7 +65,7 @@ reviewdog <"$BRAKEMAN_REPORT_FILE" \
   "${INPUT_REVIEWDOG_FLAGS}"
 
 exit_code=$?
-printf "reviewdog exited with: %s" $exit_code
+printf "reviewdog exited with: %s" "${exit_code}"
 echo '::endgroup::'
 
 exit $exit_code
