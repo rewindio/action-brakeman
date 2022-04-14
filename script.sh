@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
 if [ -n "${GITHUB_WORKSPACE}" ]; then
   git config --global --add safe.directory "${GITHUB_WORKSPACE}" || exit 1
@@ -39,35 +39,20 @@ else
 fi
 
 gem install -N brakeman --version "${BRAKEMAN_VERSION}"
-# echo '::endgroup::'
+echo '::endgroup::'
 
-# echo '::group:: Running brakeman with reviewdog 🐶 ...'
-printf 'DEEEEEP1'
-
-BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
-
-git config --global --add safe.directory "${TEMP_PATH}" || exit 1
-
+echo '::group:: Running brakeman with reviewdog 🐶 ...'
 # shellcheck disable=SC2086
-set +e
-brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
-brakeman_exit_code=$?
-printf 'DEEEEEP2'
-
-printf "brakeman exited with: %s" "${brakeman_exit_code}"
-
-set -e
-reviewdog <"$BRAKEMAN_REPORT_FILE" \
-  -f=brakeman \
-  -name="${INPUT_TOOL_NAME}" \
-  -reporter="${INPUT_REPORTER}" \
-  -filter-mode="${INPUT_FILTER_MODE}" \
-  -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
-  -level="${INPUT_LEVEL}" \
-  "${INPUT_REVIEWDOG_FLAGS}"
+brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} |
+  reviewdog -f=brakeman \
+    -name="${INPUT_TOOL_NAME}" \
+    -reporter="${INPUT_REPORTER}" \
+    -filter-mode="${INPUT_FILTER_MODE}" \
+    -fail-on-error="${INPUT_FAIL_ON_ERROR}" \
+    -level="${INPUT_LEVEL}" \
+    "${INPUT_REVIEWDOG_FLAGS}"
 
 exit_code=$?
-printf "reviewdog exited with: %s" "${exit_code}"
 echo '::endgroup::'
 
 exit $exit_code
