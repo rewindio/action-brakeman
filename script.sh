@@ -39,9 +39,9 @@ else
 fi
 
 gem install -N brakeman --version "${BRAKEMAN_VERSION}"
-echo '::endgroup::'
+# echo '::endgroup::'
 
-echo '::group:: Running brakeman with reviewdog 🐶 ...'
+# echo '::group:: Running brakeman with reviewdog 🐶 ...'
 printf 'DEEEEEP1'
 
 BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
@@ -49,12 +49,14 @@ BRAKEMAN_REPORT_FILE="$TEMP_PATH"/brakeman_report
 git config --global --add safe.directory "${TEMP_PATH}" || exit 1
 
 # shellcheck disable=SC2086
-brakeman --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
+set +e
+brakeman --quiet --format tabs ${INPUT_BRAKEMAN_FLAGS} --output "$BRAKEMAN_REPORT_FILE"
 brakeman_exit_code=$?
 printf 'DEEEEEP2'
 
 printf "brakeman exited with: %s" "${brakeman_exit_code}"
 
+set -e
 reviewdog <"$BRAKEMAN_REPORT_FILE" \
   -f=brakeman \
   -name="${INPUT_TOOL_NAME}" \
